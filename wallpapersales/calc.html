@@ -7,7 +7,461 @@
 
   <body>
 
+<!-- Wallpaper Rolls Calculator (drop-in, inline HTML/CSS/JS) -->
+<section class="ws-calc" aria-labelledby="ws-calc-title">
+  <div class="ws-calc__inner">
+    <p class="ws-calc__kicker">WALLPAPER CALCULATOR</p>
+    <h2 id="ws-calc-title" class="ws-calc__title">Calculate how many rolls you need</h2>
+    <p class="ws-calc__intro">
+      Add each wall you’re wallpapering, set your roll coverage, and we’ll estimate the number of rolls required.
+      Always round up — and double-check pattern repeats.
+    </p>
 
+    <div class="ws-calc__grid">
+      <!-- WALLS -->
+      <div class="ws-calc__card">
+        <h3 class="ws-calc__h3">Your walls</h3>
+
+        <div class="ws-calc__table" role="table" aria-label="Wall measurements">
+          <div class="ws-calc__row ws-calc__row--head" role="row">
+            <div role="columnheader">Wall</div>
+            <div role="columnheader">Height (m)</div>
+            <div role="columnheader">Width (m)</div>
+            <div role="columnheader" class="ws-calc__right">Area (m²)</div>
+            <div role="columnheader" aria-hidden="true"></div>
+          </div>
+
+          <div id="wsWalls"></div>
+        </div>
+
+        <div class="ws-calc__actions">
+          <button type="button" class="ws-calc__btn ws-calc__btn--ghost" id="wsAddWall">+ Add another wall</button>
+          <button type="button" class="ws-calc__btn ws-calc__btn--link" id="wsClear">Clear</button>
+        </div>
+      </div>
+
+      <!-- SETTINGS + RESULT -->
+      <div class="ws-calc__card">
+        <h3 class="ws-calc__h3">Roll settings</h3>
+
+        <div class="ws-calc__field">
+          <label class="ws-calc__label" for="wsCoverage">Coverage per roll (m²)</label>
+          <input class="ws-calc__input" id="wsCoverage" type="number" inputmode="decimal" min="0.1" step="0.1" value="5.2" />
+          <p class="ws-calc__hint">Most standard rolls cover ~5.2m², but always check the product specs.</p>
+        </div>
+
+        <div class="ws-calc__field ws-calc__field--inline">
+          <label class="ws-calc__check">
+            <input id="wsWaste10" type="checkbox" />
+            <span>Add 10% for wastage (errors / small pattern repeats)</span>
+          </label>
+        </div>
+
+        <hr class="ws-calc__hr" />
+
+        <h3 class="ws-calc__h3">Estimated result</h3>
+
+        <div class="ws-calc__result" aria-live="polite">
+          <div class="ws-calc__resultRow">
+            <span>Total wall area</span>
+            <strong id="wsTotalArea">0.00 m²</strong>
+          </div>
+          <div class="ws-calc__resultRow">
+            <span>Adjusted area</span>
+            <strong id="wsAdjustedArea">0.00 m²</strong>
+          </div>
+          <div class="ws-calc__resultRow ws-calc__resultRow--big">
+            <span>Rolls needed</span>
+            <strong id="wsRolls">0</strong>
+          </div>
+
+          <p class="ws-calc__note">
+            Tip: It’s better to have a little leftover than run out, especially as batches can vary. If your wallpaper has a
+            large pattern repeat (30cm+), you may need more than 10% extra.
+          </p>
+        </div>
+
+        <p class="ws-calc__disclaimer">
+          <strong>Disclaimer:</strong> This calculator provides an estimate only. Wallpaper Sales accepts no responsibility if
+          the figure given is inaccurate. You should always manually check measurements, pattern repeats, and product
+          specifications to ensure you order the correct amount.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- Wallpaper Sales style-ish: soft background, elegant serif headings, minimal lines --- */
+  .ws-calc {
+    background: #f6f2f1;
+    padding: 36px 18px;
+    color: #141414;
+  }
+
+  .ws-calc__inner {
+    max-width: 980px;
+    margin: 0 auto;
+  }
+
+  .ws-calc__kicker {
+    margin: 0 0 6px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #2a2a2a;
+  }
+
+  .ws-calc__title {
+    margin: 0 0 10px;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 34px;
+    line-height: 1.1;
+    font-weight: 500;
+  }
+
+  .ws-calc__intro {
+    margin: 0 0 22px;
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 70ch;
+    color: #2a2a2a;
+  }
+
+  .ws-calc__grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 18px;
+    align-items: start;
+  }
+
+  .ws-calc__card {
+    background: #fbf9f8;
+    border: 1px solid rgba(20, 20, 20, 0.08);
+    border-radius: 10px;
+    padding: 18px;
+  }
+
+  .ws-calc__h3 {
+    margin: 0 0 12px;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .ws-calc__table {
+    width: 100%;
+  }
+
+  .ws-calc__row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr 32px;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(20, 20, 20, 0.08);
+    align-items: center;
+  }
+
+  .ws-calc__row--head {
+    padding-top: 0;
+    font-size: 12px;
+    color: #2a2a2a;
+  }
+
+  .ws-calc__right {
+    text-align: right;
+  }
+
+  .ws-calc__input {
+    width: 100%;
+    padding: 10px 10px;
+    border: 1px solid rgba(20, 20, 20, 0.18);
+    border-radius: 8px;
+    background: #ffffff;
+    font-size: 14px;
+    outline: none;
+  }
+
+  .ws-calc__input:focus {
+    border-color: rgba(20, 20, 20, 0.45);
+  }
+
+  .ws-calc__cellArea {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ws-calc__remove {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    color: rgba(20, 20, 20, 0.55);
+    padding: 6px 0;
+  }
+
+  .ws-calc__remove:hover {
+    color: rgba(20, 20, 20, 0.9);
+  }
+
+  .ws-calc__actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 14px;
+  }
+
+  .ws-calc__btn {
+    border-radius: 999px;
+    padding: 10px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid rgba(20, 20, 20, 0.18);
+    background: #141414;
+    color: #fff;
+  }
+
+  .ws-calc__btn--ghost {
+    background: transparent;
+    color: #141414;
+  }
+
+  .ws-calc__btn--ghost:hover {
+    background: rgba(20, 20, 20, 0.04);
+  }
+
+  .ws-calc__btn--link {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: rgba(20, 20, 20, 0.75);
+    text-decoration: underline;
+  }
+
+  .ws-calc__btn--link:hover {
+    color: #141414;
+  }
+
+  .ws-calc__field {
+    margin-bottom: 14px;
+  }
+
+  .ws-calc__field--inline {
+    margin-top: 6px;
+  }
+
+  .ws-calc__label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 6px;
+    color: #2a2a2a;
+  }
+
+  .ws-calc__hint {
+    margin: 8px 0 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(20, 20, 20, 0.7);
+  }
+
+  .ws-calc__check {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 13px;
+    color: #141414;
+    user-select: none;
+  }
+
+  .ws-calc__check input {
+    width: 16px;
+    height: 16px;
+    accent-color: #141414;
+  }
+
+  .ws-calc__hr {
+    border: 0;
+    border-top: 1px solid rgba(20, 20, 20, 0.08);
+    margin: 16px 0;
+  }
+
+  .ws-calc__result {
+    background: #ffffff;
+    border: 1px solid rgba(20, 20, 20, 0.08);
+    border-radius: 10px;
+    padding: 14px;
+  }
+
+  .ws-calc__resultRow {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(20, 20, 20, 0.06);
+    font-size: 13px;
+  }
+
+  .ws-calc__resultRow strong {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ws-calc__resultRow--big {
+    border-bottom: 0;
+    margin-top: 4px;
+    font-size: 15px;
+  }
+
+  .ws-calc__note {
+    margin: 10px 0 0;
+    font-size: 12px;
+    line-height: 1.55;
+    color: rgba(20, 20, 20, 0.75);
+  }
+
+  .ws-calc__disclaimer {
+    margin: 12px 0 0;
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: rgba(20, 20, 20, 0.7);
+  }
+
+  @media (max-width: 860px) {
+    .ws-calc__grid {
+      grid-template-columns: 1fr;
+    }
+    .ws-calc__title {
+      font-size: 30px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .ws-calc__row {
+      grid-template-columns: 1.1fr 1fr 1fr 1fr 28px;
+      gap: 8px;
+    }
+    .ws-calc__title {
+      font-size: 28px;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    const wallsEl = document.getElementById("wsWalls");
+    const addBtn = document.getElementById("wsAddWall");
+    const clearBtn = document.getElementById("wsClear");
+
+    const coverageEl = document.getElementById("wsCoverage");
+    const wasteEl = document.getElementById("wsWaste10");
+
+    const totalAreaEl = document.getElementById("wsTotalArea");
+    const adjustedAreaEl = document.getElementById("wsAdjustedArea");
+    const rollsEl = document.getElementById("wsRolls");
+
+    let wallCount = 0;
+
+    function clampNumber(n) {
+      const x = Number(n);
+      return Number.isFinite(x) ? x : 0;
+    }
+
+    function format2(n) {
+      return (Math.round(n * 100) / 100).toFixed(2);
+    }
+
+    function createWallRow(height = "", width = "") {
+      wallCount += 1;
+
+      const row = document.createElement("div");
+      row.className = "ws-calc__row";
+      row.dataset.wallId = String(wallCount);
+
+      row.innerHTML = `
+        <div role="cell">Wall ${wallCount}</div>
+        <div role="cell">
+          <input class="ws-calc__input" type="number" inputmode="decimal" min="0" step="0.01"
+                 placeholder="e.g. 2.40" aria-label="Wall ${wallCount} height in metres" value="${height}">
+        </div>
+        <div role="cell">
+          <input class="ws-calc__input" type="number" inputmode="decimal" min="0" step="0.01"
+                 placeholder="e.g. 3.00" aria-label="Wall ${wallCount} width in metres" value="${width}">
+        </div>
+        <div role="cell" class="ws-calc__cellArea"><span data-area>0.00</span></div>
+        <div role="cell">
+          <button type="button" class="ws-calc__remove" title="Remove wall" aria-label="Remove wall ${wallCount}">×</button>
+        </div>
+      `;
+
+      const inputs = row.querySelectorAll("input");
+      const areaSpan = row.querySelector("[data-area]");
+      const removeBtn = row.querySelector(".ws-calc__remove");
+
+      function updateRowArea() {
+        const h = clampNumber(inputs[0].value);
+        const w = clampNumber(inputs[1].value);
+        const area = Math.max(0, h) * Math.max(0, w);
+        areaSpan.textContent = format2(area);
+      }
+
+      inputs.forEach((inp) => inp.addEventListener("input", () => { updateRowArea(); updateTotals(); }));
+      removeBtn.addEventListener("click", () => {
+        row.remove();
+        updateTotals();
+      });
+
+      updateRowArea();
+      return row;
+    }
+
+    function getTotalArea() {
+      let total = 0;
+      wallsEl.querySelectorAll(".ws-calc__row").forEach((row) => {
+        const areaText = row.querySelector("[data-area]")?.textContent || "0";
+        total += clampNumber(areaText);
+      });
+      return total;
+    }
+
+    function updateTotals() {
+      const totalArea = getTotalArea();
+
+      const coverage = Math.max(0.1, clampNumber(coverageEl.value || 0));
+      const wastageMultiplier = wasteEl.checked ? 1.1 : 1;
+
+      const adjustedArea = totalArea * wastageMultiplier;
+      const rolls = totalArea > 0 ? Math.ceil(adjustedArea / coverage) : 0;
+
+      totalAreaEl.textContent = `${format2(totalArea)} m²`;
+      adjustedAreaEl.textContent = `${format2(adjustedArea)} m²`;
+      rollsEl.textContent = String(rolls);
+    }
+
+    function reset() {
+      wallsEl.innerHTML = "";
+      wallCount = 0;
+      // Start with two rows as a sensible default
+      wallsEl.appendChild(createWallRow());
+      wallsEl.appendChild(createWallRow());
+      coverageEl.value = "5.2";
+      wasteEl.checked = false;
+      updateTotals();
+    }
+
+    addBtn.addEventListener("click", () => {
+      wallsEl.appendChild(createWallRow());
+      updateTotals();
+    });
+
+    clearBtn.addEventListener("click", reset);
+
+    coverageEl.addEventListener("input", updateTotals);
+    wasteEl.addEventListener("change", updateTotals);
+
+    // Init
+    reset();
+  })();
+</script>
 
 
     
